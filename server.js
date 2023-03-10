@@ -1,7 +1,7 @@
 require('dotenv').config()
 const express = require('express')
 const app = express()
-const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
+const stripe = require("stripe")(process.env.STRIPE_API_SECRET);
 const bodyParser = require("body-parser")
 const cors = require('cors')
 
@@ -13,14 +13,15 @@ app.use(cors());
 app.post("/api/payment", cors(), async (req, res) => {
   let { amount, id } = req.body
   console.log("amount & id :", amount, id);
-
+const stripeToken = req.body.stripeToken;
   try {
-    const payement = await stripe.payementIntents.create({
-      amount: amount,
+    const payement = await stripe.charges.create({
+      amount: 2000,
       currency: "eur",
       description: "La description de l'objet acheté",
-      payement_method: id,
-      confirm: true,
+      // payement_method: id,
+      // confirm: true,
+      source: stripeToken,
     })
     res.json({
       message: "Payement réussi",
